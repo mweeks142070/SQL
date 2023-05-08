@@ -1,0 +1,32 @@
+#CREATING A BOOK STORE DATABASE
+
+CREATE TABLE book_store (ID INTEGER PRIMARY KEY, Title TEXT, Author TEXT, Price INTEGER, Quantity INTEGER);
+
+INSERT INTO book_store VALUES (1, 'To Kill a Mockingbird', 'Harper Lee',15, 10),
+(2, '1984', 'George Orwell', 17, 15), 
+(3, 'Little Women', 'Louisa May Alcot' ,14, 14), 
+(4, 'Blank Journal', 'Harpers House Publishing',10, 20), 
+(5, 'Flower Bookmark', 'Harpers House Publishing', 3, 15),
+(6, 'Wuthering Heights', 'Emily Bronte', 12, 7),
+(7, 'The Great Gatsby', 'F. Scott Fitzgerald', 20, 12),
+(8, 'Dracula', 'Bram Stoker', 10, 2),
+(9,'Frankenstein', 'Mary Shelley', 10, 4),
+(10, 'The Call of the Wild', 'Jack London', 13, 9),
+(11, 'Jane Eyre', 'Charlotte Bronte', 15, 1),
+(12, 'The Scarlett Letter', 'Nathaniel Hawthorne', 11, 1),
+(13, 'Great Expectations', 'Charles Dickens', 9, 2),
+(14, 'The Catcher in the Rye', 'J.D. Salinger', 11, 3),
+(15, 'Emma', 'Jane Austen', 9, 1);
+
+#DISPLAY THE DATABASE 'ORDERED BY PRICE' AND THEN 'SHOW WHERE PRICE IS GREATER THAN 10 ORDERED BY LOWEST PRICE FIRST'
+SELECT * FROM book_store ORDER BY Price;
+SELECT * FROM book_store WHERE Price >10 ORDER BY PRICE ASC;
+
+#WHAT IS THE AVERAGE PRICE OF ALL THE BOOKS
+SELECT AVG(Price) as 'Average Price' FROM book_store;
+
+#ORDER THE BOOKS BY MOST TO LEAST QUANTITY WHERE THERE ARE MORE THAN 5 BOOKS
+SELECT * FROM book_store WHERE Quantity > 5 ORDER BY Quantity desc;
+
+#WHAT ARE THE 5 MOST EXPENSIVE BOOKS?
+SELECT * FROM book_store ORDER BY Price desc LIMIT 5;

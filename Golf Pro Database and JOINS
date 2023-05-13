@@ -1,0 +1,69 @@
+/* Create table about the people and what they do here */
+
+CREATE TABLE golf_pros (
+id INTEGER PRIMARY KEY autoincrement,
+full_name TEXT,
+age INTEGER,
+country TEXT);
+
+INSERT INTO golf_pros (full_name, age, country) 
+VALUES ('Rory Mcilroy', 34, 'Ireland'),
+('Jon Rahm', 28, 'Spain'),
+('Scottie Scheffler', 26, 'United States'),
+('Patrick Cantlay', 31, 'United States'),
+('Jordan Spieth', 29, 'United States'),
+('Jason Day', 35, 'Australia'),
+('Adam Scott', 42, 'Australia');
+
+CREATE TABLE sponsors (
+id INTEGER PRIMARY KEY autoincrement,
+name TEXT);
+
+INSERT INTO sponsors (name)
+VALUES ('Callaway'),
+('Titleist'),
+('Goldman Sachs'),
+('Under Armour'),
+('TaylorMade'),
+('Uniqlo'),
+('Nike');
+
+CREATE TABLE players_ad (
+player_id INTEGER,
+sponsor_id INTEGER,
+ad_type TEXT,
+compensation INTEGER,
+PRIMARY KEY (player_id, sponsor_id));
+
+INSERT INTO players_ad (player_id, sponsor_id, ad_type, compensation) 
+VALUES (1, 1, 'Golf Channel Commercial', 50000),
+(2, 2, 'ESPN Commercial', 75000),
+(3, 3, 'TikTok', 25000),
+(4, 4, 'Golf Digest Article', 10000),
+(5, 7, 'TikTok', 5000),
+(6, 5, 'Golf Channel Commercial', 30000),
+(7, 6, 'Instagram Reel', 15000),
+(4, 7, 'ESPN Commercial', 8000),
+(1, 4, 'Tik Tok', 100000);
+
+/* implicit inner join */
+SELECT * FROM golf_pros, players_ad
+WHERE golf_pros.id = players_ad.player_id;
+
+SELECT * FROM sponsors, players_ad
+WHERE sponsors.id = players_ad.sponsor_id;
+
+/* explicit inner join to gather total compensation of each player from sponsors */
+SELECT golf_pros.id, golf_pros.full_name, GROUP_CONCAT(sponsors.name) AS sponsor_names, SUM(players_ad.compensation)
+FROM golf_pros
+INNER JOIN players_ad 
+ON golf_pros.id = players_ad.player_id
+INNER JOIN sponsors 
+ON players_ad.sponsor_id = sponsors.id
+GROUP BY golf_pros.id, golf_pros.full_name;
+
+/* left join */
+SELECT golf_pros.full_name, golf_pros.country, players_ad.ad_type
+FROM golf_pros
+LEFT JOIN players_ad
+ON golf_pros.id = players_ad.player_id;

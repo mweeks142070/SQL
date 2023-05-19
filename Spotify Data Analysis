@@ -1,0 +1,62 @@
+# First, I downloaded Spotify data of the top 50 songs in 2021 from Kaggle.
+# Then I created a table to insert Spotify data into.
+# Finally, I performed analytics on the data using SQL. 
+
+#Creating the table: 
+CREATE TABLE BIT_DB.Spotifydata (
+id integer PRIMARY KEY,
+artist_name varchar NOT NULL,
+track_name varchar NOT NULL,
+track_id varchar NOT NULL,
+popularity integer NOT NULL,
+danceability decimal(4,3) NOT NULL,
+energy decimal(4,3) NOT NULL,
+key integer NOT NULL,
+loudness decimal(5,3) NOT NULL,
+mode integer NOT NULL,
+speechiness decimal(5,4) NOT NULL,
+acousticness decimal(6,5) NOT NULL,
+instrumentalness text NOT NULL,
+liveness decimal(5,4) NOT NULL,
+valence decimal(4,3) NOT NULL,
+tempo decimal(6,3) NOT NULL,
+duration_ms integer NOT NULL,
+time_signature integer NOT NULL 
+)
+
+#Then I inserted the Spotify Data .csv into the table.
+
+#Next, I explored the data using the following SQL. 
+
+#1. What is the average danceability and popularity of each artist?
+SELECT artist_name, AVG(danceability) as avg_danceability, AVG(Popularity) as avg_popularity
+FROM BIT_DB.Spotifydata
+GROUP BY artist_name;
+
+#2. Who are the top 10 artists based on popularity?
+SELECT artist_name, popularity
+FROM BIT_DB.Spotifydata
+ORDER BY popularity desc
+LIMIT 10;
+
+#3. What artist released the longest song?
+SELECT artist_name, duration_ms
+FROM BIT_DB.Spotifydata
+ORDER BY duration_ms desc
+LIMIT 1;
+
+#4. What's the average danceability for the 10 most popular songs?
+SELECT AVG(danceability) as avg_danceability
+FROM BIT_DB.Spotifydata
+ORDER BY popularity desc
+LIMIT 10;
+
+#5. Show the artisits who have tracks with a popularity of 90 or greater.
+SELECT artist_name, track_name, popularity
+FROM BIT_DB.Spotifydata
+WHERE popularity >= 90;
+
+#6. How many track appearances did Doja Cat have in the top 50?
+SELECT artist_name, count(track_name) as appearance_number
+FROM BIT_DB.Spotifydata
+WHERE artist_name = 'Doja Cat';

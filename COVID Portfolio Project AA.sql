@@ -1,14 +1,18 @@
---SELECT *
---FROM CovidVaccinations
---ORDER BY 3,4;
+/*
+COVID 19 Data Exploration
+
+Skills used: Joins, CTE's, Temp Tables, Windows Functions, Aggregate Functions, Creating Views, Converting Data Types
+*/
+
 
 SELECT *
 FROM CovidDeaths
 ORDER BY 3,4;
 
---SELECT DATA THAT WE ARE GOING TO BE USING
+--Select data that we are going to be starting with
 SELECT Location, date, total_cases, new_cases, total_deaths, population
 FROM CovidDeaths
+WHERE continent IS NOT NULL
 ORDER BY 1,2;
 
 -- Looking at total cases vs. total deaths
@@ -16,13 +20,13 @@ ORDER BY 1,2;
 SELECT Location, date, total_cases, total_deaths, (total_deaths/total_cases)*100 as DeathPercentage
 FROM CovidDeaths
 WHERE Location = 'United States'
+AND continent IS NOT NULL
 ORDER BY 1,2;
 
 -- Looking at the total cases vs. the population
 -- Shows what percentage of population contracted Covid
 SELECT Location, date, Population, total_cases, (total_cases/Population)*100 as ContractionRate
 FROM CovidDeaths
-WHERE Location = 'United States'
 ORDER BY 1,2;
 
 -- Shows what countries have the highest infection rate compared to population
@@ -39,6 +43,7 @@ GROUP BY Location, Population
 ORDER BY HighestDeathCount desc;
 
 -- Breaking things down by continent
+-- Showing continents with highest death count per population
 SELECT location, MAX(cast(total_deaths as int)) as HighestDeathCount
 FROM CovidDeaths
 WHERE continent IS NULL
@@ -65,13 +70,7 @@ WHERE continent IS NOT NULL
 ORDER BY 1,2;
 
 -- Looking at total population vs. New Vaccinations per day
-SELECT *
-FROM CovidDeaths as deaths
-JOIN CovidVaccinations as vac
-ON deaths.location = vac.location
-AND deaths.date = vac.date;
-
---USE CTE
+-- Using CTE and partition by
 WITH PopvsVac (Continent, Location, Date, Population, New_Vaccinations, TotalVaccinationsPerLocation)
 as
 (
@@ -86,7 +85,7 @@ WHERE deaths.continent IS NOT NULL
 SELECT *, (TotalVaccinationsPerLocation/Population)*100 as PercentageVaccinated
 FROM PopvsVac;
 
---TEMP TABLE
+--Using Temp Table to perform previous query
 DROP TABLE if exists #PercentPopulationVaccination
 Create Table #PercentPopulationVaccination
 (

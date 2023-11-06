@@ -1,0 +1,48 @@
+-- Business wants to send out a promotional email to all existing customers so we need names and email addresses of customers.
+  
+SELECT first_name, last_name, email
+FROM customer;
+
+-- An Austrailian visitor is not familiar with the US movie ratings and wants to view a movie. The visitor would like to know the different ratings for movies. 
+
+SELECT DISTINCT(rating)
+FROM film;
+
+-- Business wants to know the number of discount amounts paid by the customers.
+
+SELECT COUNT(DISTINCT(amount)) as amount_count
+FROM payment;
+
+-- A customer forgot their wallet at the store. We need to track down their email to let them know. What is the email for the customer named Nancy Thomas?
+
+SELECT first_name, last_name, email
+FROM customer
+WHERE first_name = 'Nancy' AND last_name ='Thomas';
+
+-- A customer wants to know what the movie "Outlaw Hanky" is about. Could you give them the description for the movie?
+
+SELECT title, description
+FROM film
+WHERE title = 'Outlaw Hanky';
+
+-- A customer is late on their movie return and we've mailed them a letter to their address at "259 Ipoh Drive." We should also call them on the phone to let them know. Can you get the phone # for the customer who lives at this address?
+
+SELECT address, phone, first_name, last_name
+FROM address
+WHERE address = '259 Ipoh Drive';
+
+-- We want to reward our first 10 paying customers. What are the customer ids of the first ten customers who made a payment?
+
+SELECT customer_id, payment_date
+FROM payment
+WHERE amount > 0.00
+ORDER BY payment_date asc
+LIMIT 10;
+
+-- A customer wants to quickly rent a video to watch over their lunch break. What are the titles of the five shortest runtimes for movies?
+
+SELECT title, length
+FROM film
+ORDER BY length asc
+LIMIT 5;
+

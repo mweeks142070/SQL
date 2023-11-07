@@ -56,7 +56,7 @@ ORDER BY COUNT(payment) DESC;
 
 Staff member 1 handled 7292 payments. Staff member 2 handled 7304 payments. Staff member 2 will get the bonus.
 
-**-- Corporate Headquarters is conducting a study on the relationship between replacement cost and a movies MPAA rating. What is the avergae replacement cost per MPAA rating?**
+__-- Corporate Headquarters is conducting a study on the relationship between replacement cost and a movies MPAA rating. What is the avergae replacement cost per MPAA rating?__
 
 SELECT rating, ROUND(AVG(replacement_cost),2) as avg_replacement_cost
 FROM film

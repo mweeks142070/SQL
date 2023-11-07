@@ -8,7 +8,7 @@ FROM customer;
 SELECT DISTINCT(rating)
 FROM film;
 
--- Business wants to know the number of discount amounts paid by the customers.
+-- Business wants to know the number of distinct amounts paid by the customers.
 
 SELECT COUNT(DISTINCT(amount)) as amount_count
 FROM payment;
@@ -24,6 +24,7 @@ WHERE first_name = 'Nancy' AND last_name ='Thomas';
 SELECT title, description
 FROM film
 WHERE title = 'Outlaw Hanky';
+
 
 -- A customer is late on their movie return and we've mailed them a letter to their address at "259 Ipoh Drive." We should also call them on the phone to let them know. Can you get the phone # for the customer who lives at this address?
 
@@ -56,17 +57,62 @@ ORDER BY COUNT(payment) DESC;
 
 Staff member 1 handled 7292 payments. Staff member 2 handled 7304 payments. Staff member 2 will get the bonus.
 
-###Corporate Headquarters is conducting a study on the relationship between replacement cost and a movies MPAA rating. What is the avergae replacement cost per MPAA rating?
+-- Corporate Headquarters is conducting a study on the relationship between replacement cost and a movies MPAA rating. What is the avergae replacement cost per MPAA rating?
 
 SELECT rating, ROUND(AVG(replacement_cost),2) as avg_replacement_cost
 FROM film
 GROUP BY rating
 ORDER BY AVG(replacement_cost);
 
-"PG"	18.96
-"G"	20.12
-"NC-17"	20.14
-"R"	20.23
-"PG-13"	20.40
+rating      avg_replacement_cost
+"PG"	      18.96
+"G"	        20.12
+"NC-17"	    20.14
+"R"	        20.23
+"PG-13"	    20.40
 
--- 
+-- We are running a promotion to reward our top 5 customers with coupons.  What are the customer IDs of the top 5 customers by total spend?
+
+SELECT customer_id, SUM(amount) as total_spend
+FROM payment
+GROUP BY customer_id
+ORDER BY SUM(amount) DESC
+LIMIT 5;
+
+Customer_id     total_spend
+148	            211.55
+526	            208.58
+178	            194.61
+137	            191.62
+144	            189.60
+
+-- We are launching a platinum service for our most loyal customers. We will assign platinum status to customers that have had 40 or more transaction payments. 
+Which customer IDs are eligible for platinum status?
+
+SELECT customer_id, COUNT(payment_id) as num_transactions
+FROM payment
+GROUP BY customer_id
+HAVING COUNT(payment_id) >= 40;
+
+customer_id   num_transactions
+144	          40
+526	          42
+148	          45
+
+-- What are the customer IDs of customers who have spent more than $100 in payments with our staff ID member 2?
+
+SELECT customer_id, staff_id, SUM(amount)
+FROM payment
+WHERE staff_id = 2
+GROUP BY customer_id, staff_id
+HAVING SUM(amount) > 100;
+
+customer_id  staff_id   SUM(amount)
+187	          2	        110.81
+522	          2	        102.80
+526	          2	        101.78
+211	          2	        108.77
+148	          2	        110.78
+
+
+

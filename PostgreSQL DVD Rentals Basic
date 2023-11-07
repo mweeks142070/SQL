@@ -46,3 +46,25 @@ FROM film
 ORDER BY length asc
 LIMIT 5;
 
+-- We have 2 staff members with staff IDs 1 and 2. We want to give a bonus to the staff member that handled the most payments. (Most in terms of number of payments processes, not total dollar amount).
+How many payments did each staff member handle and who gets the bonus?
+
+SELECT staff_ID, COUNT(payment) as num_payments
+FROM payment
+GROUP BY staff_ID
+ORDER BY COUNT(payment) DESC;
+
+Staff member 1 handled 7292 payments. Staff member 2 handled 7304 payments. Staff member 2 will get the bonus.
+
+**-- Corporate Headquarters is conducting a study on the relationship between replacement cost and a movies MPAA rating. What is the avergae replacement cost per MPAA rating?**
+
+SELECT rating, ROUND(AVG(replacement_cost),2) as avg_replacement_cost
+FROM film
+GROUP BY rating
+ORDER BY AVG(replacement_cost);
+
+"PG"	18.96
+"G"	20.12
+"NC-17"	20.14
+"R"	20.23
+"PG-13"	20.40

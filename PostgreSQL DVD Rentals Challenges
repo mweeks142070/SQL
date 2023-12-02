@@ -51,5 +51,30 @@ FULL OUTER JOIN actor
 ON film_actor.actor_id = actor.actor_id
 WHERE actor.first_name = 'Nick' AND actor.last_name = 'Wahlberg';
 
+-- We want to know and compare the various amounts of films we have per movie rating. 
+
+SELECT 
+SUM (CASE rating
+		WHEN 'NC-17' THEN 1
+	 	ELSE 0
+	 END) as NC17,
+SUM (CASE rating
+		WHEN 'G' THEN 1
+		ELSE 0
+	END) as G,
+SUM (CASE rating
+		WHEN 'PG-13' THEN 1
+		ELSE 0
+	END) as PG13,
+SUM (CASE rating
+		WHEN 'R' THEN 1
+		ELSE 0
+	END) as R,
+SUM (CASE rating
+		WHEN 'PG' THEN 1
+		ELSE 0
+	END) as PG
+FROM film
+
 
 

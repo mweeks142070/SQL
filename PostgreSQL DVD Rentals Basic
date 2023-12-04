@@ -64,12 +64,6 @@ FROM film
 GROUP BY rating
 ORDER BY AVG(replacement_cost);
 
-rating      avg_replacement_cost
-"PG"	      18.96
-"G"	        20.12
-"NC-17"	    20.14
-"R"	        20.23
-"PG-13"	    20.40
 
 -- We are running a promotion to reward our top 5 customers with coupons.  What are the customer IDs of the top 5 customers by total spend?
 
@@ -79,12 +73,7 @@ GROUP BY customer_id
 ORDER BY SUM(amount) DESC
 LIMIT 5;
 
-Customer_id     total_spend
-148	            211.55
-526	            208.58
-178	            194.61
-137	            191.62
-144	            189.60
+
 
 -- We are launching a platinum service for our most loyal customers. We will assign platinum status to customers that have had 40 or more transaction payments. 
 Which customer IDs are eligible for platinum status?
@@ -94,10 +83,6 @@ FROM payment
 GROUP BY customer_id
 HAVING COUNT(payment_id) >= 40;
 
-customer_id   num_transactions
-144	          40
-526	          42
-148	          45
 
 -- What are the customer IDs of customers who have spent more than $100 in payments with our staff ID member 2?
 
@@ -107,12 +92,6 @@ WHERE staff_id = 2
 GROUP BY customer_id, staff_id
 HAVING SUM(amount) > 100;
 
-customer_id  staff_id   SUM(amount)
-187	          2	        110.81
-522	          2	        102.80
-526	          2	        101.78
-211	          2	        108.77
-148	          2	        110.78
 
 
 

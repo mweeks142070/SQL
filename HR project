@@ -1,0 +1,24 @@
+-- create initial joins to look at everything together
+
+SELECT *
+FROM Abs_at_work as A
+LEFT JOIN compensation as C
+ON A.ID = C.ID
+LEFT JOIN Reasons as R
+ON A.Reason_for_absence = R.Number;
+
+-- now we optimize the query to only bring back columns we need to answer business question and create dashboard
+-- find ~100 healthiest individuals to distribute bonus to
+
+SELECT *
+FROM Abs_at_work
+WHERE Social_drinker = 0 
+AND Social_smoker = 0 
+AND Body_mass_index <25 
+AND Absenteeism_time_in_hours < (SELECT AVG(Absenteeism_time_in_hours) FROM Abs_at_work);
+
+-- calculate a wage increase on annual compensation for non-smokers where the budget is $983,221
+
+SELECT COUNT (*) as non_smokers, 983221 as budget, 983221/COUNT(*) as bonus_per_non_smoker_per_year
+FROM Abs_at_work
+WHERE Social_smoker = 0;

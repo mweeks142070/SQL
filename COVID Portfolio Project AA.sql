@@ -1,5 +1,5 @@
 /*
-COVID 19 Data Exploration COVID Data
+COVID 19 Data Exploration COVID Data SSMS
 
 Skills used: Joins, CTE's, Temp Tables, Windows Functions, Aggregate Functions, Creating Views, Converting Data Types
 */
@@ -9,52 +9,53 @@ SELECT *
 FROM CovidDeaths
 ORDER BY 3,4;
 
---Select data that we are going to be starting with
+--Select data that we are going to be starting with and explore
 SELECT Location, date, total_cases, new_cases, total_deaths, population
 FROM CovidDeaths
-WHERE continent IS NOT NULL
 ORDER BY 1,2;
 
--- Looking at total cases vs. total deaths
--- Shows likelihood of dying if you contract Covid in your country
-SELECT Location, date, total_cases, total_deaths, (total_deaths/total_cases)*100 as DeathPercentage
+-- Looking at total cases vs. total deaths for US
+-- Shows likelihood of dying if you contract Covid in United States
+SELECT Location, date, total_cases, total_deaths, ROUND((total_deaths/total_cases) * 100, 2) as death_percentage
 FROM CovidDeaths
-WHERE Location = 'United States'
-AND continent IS NOT NULL
+WHERE location = 'United States'
 ORDER BY 1,2;
 
 -- Looking at the total cases vs. the population
--- Shows what percentage of population contracted Covid
-SELECT Location, date, Population, total_cases, (total_cases/Population)*100 as ContractionRate
+-- Shows what percentage of population contracted Covid in United States
+SELECT Location, date, population, total_cases, ROUND((total_cases/population) * 100, 2) as contraction_rate
 FROM CovidDeaths
+WHERE location = 'United States'
 ORDER BY 1,2;
 
 -- Shows what countries have the highest infection rate compared to population
-SELECT Location, Population, MAX(total_cases) as HighestInfectionCount, MAX((total_cases/Population))*100 as ContractionRate
+SELECT Location, population, MAX(total_cases) as highest_infection_count, ROUND(MAX((total_cases/population)) * 100, 2) as contraction_rate
 FROM CovidDeaths
-GROUP BY Location, Population
-ORDER BY ContractionRate desc;
+GROUP BY location, population
+ORDER BY contraction_rate DESC;
 
 -- Shows the countries with the highest death count compared to population
-SELECT Location, Population, MAX(cast(total_deaths as int)) as HighestDeathCount
+-- Had to use cast as data type in data base was creating an issue
+-- Continents were listed in the results as "Location" and the continent column was left null. It was being included in our results when we just want to see countries.
+SELECT Location, population, MAX(cast(total_deaths as int)) as total_death_count
 FROM CovidDeaths
 WHERE continent IS NOT NULL
-GROUP BY Location, Population
-ORDER BY HighestDeathCount desc;
+GROUP BY location, population
+ORDER BY total_death_count DESC;
 
 -- Breaking things down by continent
 -- Showing continents with highest death count per population
-SELECT location, MAX(cast(total_deaths as int)) as HighestDeathCount
+SELECT location, MAX(cast(total_deaths as int)) as total_death_count
 FROM CovidDeaths
 WHERE continent IS NULL
 GROUP BY location
-ORDER BY HighestDeathCount desc;
- --OR (depending on data)
-SELECT continent, MAX(cast(total_deaths as int)) as HighestDeathCount
+ORDER BY total_death_count DESC;
+ --OR (depending on dataset, the one we used here made this a little confusing)
+SELECT continent, MAX(cast(total_deaths as int)) as total_death_count
 FROM CovidDeaths
 WHERE continent IS NOT NULL
 GROUP BY continent
-ORDER BY HighestDeathCount desc;
+ORDER BY total_death_count desc;
 
 --Global Numbers BY DATE
 SELECT date, SUM(new_cases) as TotalCases, SUM(cast(new_deaths as int)) as TotalDeaths, SUM(cast(new_deaths as int))/SUM(new_cases)*100 as DeathPercentage

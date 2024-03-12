@@ -58,66 +58,44 @@ GROUP BY continent
 ORDER BY total_death_count desc;
 
 --Global Numbers BY DATE
-SELECT date, SUM(new_cases) as TotalCases, SUM(cast(new_deaths as int)) as TotalDeaths, SUM(cast(new_deaths as int))/SUM(new_cases)*100 as DeathPercentage
+SELECT date, SUM(new_cases) as total_cases, SUM(cast(new_deaths as int)) as total_deaths, ROUND((SUM(cast(new_deaths as int))/SUM(new_cases)*100),2) as death_percentage
 FROM CovidDeaths
 WHERE continent IS NOT NULL
 GROUP BY date
 ORDER BY 1,2;
 
 -- Total Death Percentage Globally
-SELECT  SUM(new_cases) as TotalCases, SUM(cast(new_deaths as int)) as TotalDeaths, SUM(cast(new_deaths as int))/SUM(new_cases)*100 as DeathPercentage
+SELECT  SUM(new_cases) as total_cases, SUM(cast(new_deaths as int)) as total_deaths, ROUND((SUM(cast(new_deaths as int))/SUM(new_cases)*100),2) as death_percentage
 FROM CovidDeaths
 WHERE continent IS NOT NULL
 ORDER BY 1,2;
 
--- Looking at total population vs. New Vaccinations per day
+-- Looking at total population vs. New Vaccinations per day for U.S.
 -- Using CTE and partition by
-WITH PopvsVac (Continent, Location, Date, Population, New_Vaccinations, TotalVaccinationsPerLocation)
+WITH pop_vs_vac (continent, location, date, population, new_vaccinations, total_vacs_per_location_rolling)
 as
 (
-SELECT deaths.continent, deaths.location, deaths.date, deaths.population, vac.new_vaccinations
-, SUM(CONVERT(bigint,vac.new_vaccinations)) OVER (Partition by deaths.location ORDER BY deaths.location, deaths.date) as TotalVaccinationsPerLocation
+SELECT deaths.continent, deaths.location, deaths.date, deaths.population, vacs.new_vaccinations, 
+SUM(cast(vacs.new_vaccinations as int)) OVER (PARTITION BY deaths.location ORDER BY deaths.location, deaths.date) as total_vacs_per_location_rolling
 FROM CovidDeaths as deaths
-JOIN CovidVaccinations as vac
-ON deaths.location = vac.location
-AND deaths.date = vac.date
+JOIN CovidVaccinations as vacs
+ON deaths.location = vacs.location
+AND deaths.date = vacs.date
 WHERE deaths.continent IS NOT NULL
 )
-SELECT *, (TotalVaccinationsPerLocation/Population)*100 as PercentageVaccinated
-FROM PopvsVac;
-
---Using Temp Table to perform previous query
-DROP TABLE if exists #PercentPopulationVaccination
-Create Table #PercentPopulationVaccination
-(
-Continent nvarchar(255),
-Locations nvarchar(255),
-Date datetime,
-Population numeric,
-new_vaccinations numeric,
-TotalVaccinationsPerLocation numeric)
-INSERT INTO #PercentPopulationVaccination
-SELECT deaths.continent, deaths.location, deaths.date, deaths.population, vac.new_vaccinations
-, SUM(CONVERT(bigint,vac.new_vaccinations)) OVER (Partition by deaths.location ORDER BY deaths.location, deaths.date) as TotalVaccinationsPerLocation
-FROM CovidDeaths as deaths
-JOIN CovidVaccinations as vac
-ON deaths.location = vac.location
-AND deaths.date = vac.date
-WHERE deaths.continent IS NOT NULL
-ORDER BY 2,3
-
-SELECT *, (TotalVaccinationsPerLocation/Population)*100 as PercentageVaccinated
-FROM #PercentPopulationVaccination;
-
+SELECT *, (total_vacs_per_location_rolling/population)*100 as percent_vaccinated
+FROM pop_vs_vac
+WHERE location = 'United States'
+ORDER BY 2,3;
 
 -- Creating View to store data for later visualizations
-CREATE VIEW PercentPopulationVaccinated AS 
-SELECT deaths.continent, deaths.location, deaths.date, deaths.population, vac.new_vaccinations
-, SUM(CONVERT(bigint,vac.new_vaccinations)) OVER (Partition by deaths.location ORDER BY deaths.location, deaths.date) as TotalVaccinationsPerLocation
+CREATE VIEW PercentPopulationVaccianted as
+SELECT deaths.continent, deaths.location, deaths.date, deaths.population, vacs.new_vaccinations, 
+SUM(cast(vacs.new_vaccinations as int)) OVER (PARTITION BY deaths.location ORDER BY deaths.location, deaths.date) as total_vacs_per_location_rolling
 FROM CovidDeaths as deaths
-JOIN CovidVaccinations as vac
-ON deaths.location = vac.location
-AND deaths.date = vac.date
-WHERE deaths.continent IS NOT NULL;
+JOIN CovidVaccinations as vacs
+ON deaths.location = vacs.location
+AND deaths.date = vacs.date
+WHERE deaths.continent IS NOT NULL
 
 

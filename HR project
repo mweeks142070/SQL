@@ -25,7 +25,10 @@ WHERE Social_smoker = 0;
 
 -- optimize join query for visualization
 
-SELECT a.ID, r.Reason, a.Month_of_absence, a.Body_mass_index,
+SELECT a.ID, r.Reason, a.Absenteeism_time_in_hours, a.Month_of_absence, 
+a.Day_of_the_week, c.comp_hr, a.Body_mass_index, a.Transportation_expense, 
+a.Education, a.Son, a.Social_drinker, a.Social_smoker, a.Pet,
+a.Disciplinary_failure, a.Age, a.Work_load_Average_day, 
 CASE
 	WHEN a.Body_mass_index < 18.5 THEN 'Underweight'
 	WHEN a.Body_mass_index BETWEEN 18.5 AND 25 THEN 'Healthy'
@@ -39,10 +42,7 @@ CASE
 	WHEN a.Month_of_absence IN (6,7,8) THEN 'Summer'
 	WHEN a.Month_of_absence IN (9,10,11) THEN 'Fall'
 	ELSE 'Unknown'
-END as Season_Names, 
-a.Month_of_absence, a.Day_of_the_week, a.Transportation_expense, 
-a.Education, a.Son, a.Social_drinker, a.Social_smoker, a.Pet,
-a.Disciplinary_failure, a.Age, a.Work_load_Average_day, a.Absenteeism_time_in_hours, c.comp_hr
+END as Season_Names
 FROM Abs_at_work as a
 LEFT JOIN compensation as c
 ON a.ID = c.ID

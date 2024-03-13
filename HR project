@@ -1,50 +1,50 @@
--- create initial joins to look at everything together
+-- create initial joins to look at everything together and get a feel for the data
 
-SELECT *
-FROM Abs_at_work as A
-LEFT JOIN compensation as C
-ON A.ID = C.ID
-LEFT JOIN Reasons as R
-ON A.Reason_for_absence = R.Number;
+SELECT * 
+FROM Abs_at_work as a
+LEFT JOIN compensation as c
+ON a.ID = c.ID
+LEFT JOIN reasons as r
+ON a.Reason_for_absence = r.Number;
 
 -- now we optimize the query to only bring back columns we need to answer business question and create dashboard
 -- find ~100 healthiest individuals to distribute bonus to
 
 SELECT *
 FROM Abs_at_work
-WHERE Social_drinker = 0 
-AND Social_smoker = 0 
-AND Body_mass_index <25 
+WHERE Social_drinker = 0
+AND Social_smoker = 0
+AND Body_mass_index <25
 AND Absenteeism_time_in_hours < (SELECT AVG(Absenteeism_time_in_hours) FROM Abs_at_work);
 
 -- calculate a wage increase on annual compensation for non-smokers where the budget is $983,221
 
-SELECT COUNT (*) as non_smokers, 983221 as budget, 983221/COUNT(*) as bonus_per_non_smoker_per_year
+SELECT COUNT(*) AS non_smokers,  983221 as budget, 983221/count(*) as annual_bonus_per_non_smoker_
 FROM Abs_at_work
 WHERE Social_smoker = 0;
 
--- optimize join query 
+-- optimize join query for visualization
 
-SELECT A.ID, R.Reason, A.Month_of_absence, A.Body_mass_index,
+SELECT a.ID, r.Reason, a.Month_of_absence, a.Body_mass_index,
 CASE
-	WHEN A.Body_mass_index < 18.5 THEN 'Underweight'
-	WHEN A.Body_mass_index BETWEEN 18.5 AND 25 THEN 'Healthy'
-	WHEN A.Body_mass_index BETWEEN 26 AND 30 THEN 'Overweight'
-	WHEN A.Body_mass_index > 30 THEN 'Obese'
+	WHEN a.Body_mass_index < 18.5 THEN 'Underweight'
+	WHEN a.Body_mass_index BETWEEN 18.5 AND 25 THEN 'Healthy'
+	WHEN a.Body_mass_index BETWEEN 26 AND 30 THEN 'Overweight'
+	WHEN a.Body_mass_index > 30 THEN 'Obese'
 	ELSE 'Unknown'
 END as BMI_Category,
 CASE
-	WHEN A.Month_of_absence IN (12,1,2) THEN 'Winter'
-	WHEN A.Month_of_absence IN (3,4,5) THEN 'Spring'
-	WHEN A.Month_of_absence IN (6,7,8) THEN 'Summer'
-	WHEN A.Month_of_absence IN (9,10,11) THEN 'Fall'
+	WHEN a.Month_of_absence IN (12,1,2) THEN 'Winter'
+	WHEN a.Month_of_absence IN (3,4,5) THEN 'Spring'
+	WHEN a.Month_of_absence IN (6,7,8) THEN 'Summer'
+	WHEN a.Month_of_absence IN (9,10,11) THEN 'Fall'
 	ELSE 'Unknown'
 END as Season_Names, 
-A.Month_of_absence, A.Day_of_the_week, A.Transportation_expense, 
-A.Education, A.Son, A.Social_drinker, A.Social_smoker, A.Pet,
-A.Disciplinary_failure, A.Age, A.Work_load_Average_day, A.Absenteeism_time_in_hours
-FROM Abs_at_work as A
-LEFT JOIN compensation as C
-ON A.ID = C.ID
-LEFT JOIN Reasons as R
-ON A.Reason_for_absence = R.Number;
+a.Month_of_absence, a.Day_of_the_week, a.Transportation_expense, 
+a.Education, a.Son, a.Social_drinker, a.Social_smoker, a.Pet,
+a.Disciplinary_failure, a.Age, a.Work_load_Average_day, a.Absenteeism_time_in_hours, c.comp_hr
+FROM Abs_at_work as a
+LEFT JOIN compensation as c
+ON a.ID = c.ID
+LEFT JOIN Reasons as r
+ON a.Reason_for_absence = r.Number;

@@ -13,7 +13,7 @@ FROM NashvilleHousing;
 UPDATE NashvilleHousing
 SET SaleDate = CONVERT(Date,SaleDate);
 
--- OR (we will remove the old saleDate later)
+-- OR (we will remove the old saleDate later when we remove all unused columns after this cleaning)
 
 ALTER TABLE NashvilleHousing
 ADD SaleDateConverted Date;
@@ -25,25 +25,21 @@ SET SaleDateConverted = CONVERT(Date,SaleDate);
 
 -- Populate Property Address Data
 
-SELECT *
-FROM NashvilleHousing
---WHERE PropertyAddress IS NULL
-ORDER BY ParcelID;
 
-SELECT a.ParcelID, a.PropertyAddress, b.ParcelID, b.PropertyAddress, ISNULL(a.PropertyAddress, b.PropertyAddress)
-FROM NashvilleHousing a
-JOIN NashvilleHousing b
-ON a.ParcelID = b.ParcelID
-AND a.[UniqueID ] <> b.[UniqueID ]
-WHERE a.PropertyAddress IS NULL;
+  SELECT a.ParcelID, a.PropertyAddress, b.ParcelID, b.PropertyAddress, ISNULL(a.PropertyAddress, b.PropertyAddress)
+  FROM NashvilleHousing as a
+  JOIN NashvilleHousing as b
+  ON a.ParcelID = B.ParcelID
+  AND a.[UniqueID ]<> b.[UniqueID ]
+  WHERE a.PropertyAddress IS NULL;
 
-UPDATE a
-SET PropertyAddress = ISNULL(a.PropertyAddress, b.PropertyAddress)
-FROM NashvilleHousing a
-JOIN NashvilleHousing b
-ON a.ParcelID = b.ParcelID
-AND a.[UniqueID ] <> b.[UniqueID ]
-WHERE a.PropertyAddress IS NULL;
+  UPDATE a
+  SET PropertyAddress = ISNULL(a.PropertyAddress, b.PropertyAddress)
+  FROM NashvilleHousing as a
+  JOIN NashvilleHousing as b
+  ON a.ParcelID = B.ParcelID
+  AND a.[UniqueID ]<> b.[UniqueID ]
+  WHERE a.PropertyAddress IS NULL;
 
 
 
